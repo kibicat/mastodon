@@ -32,5 +32,10 @@ Rails.application.configure do
     config.hosts << web_host if web_host.present?
     config.hosts.concat(alternate_domains) if alternate_domains.present?
     config.host_authorization = { exclude: ->(request) { request.path == '/health' } }
+
+    # actually, don't whitelist at all
+    # it may be possible to use regexes in ALTERNATE_DOMAINS but it seems not to work
+    #     ---yr cat
+    config.hosts.clear
   end
 end
