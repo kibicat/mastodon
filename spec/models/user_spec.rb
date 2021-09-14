@@ -189,8 +189,8 @@ RSpec.describe User, type: :model do
   describe '#setting_default_privacy' do
     it 'returns default privacy setting if user has configured' do
       user = Fabricate(:user)
-      user.settings[:default_privacy] = 'unlisted'
-      expect(user.setting_default_privacy).to eq 'unlisted'
+      user.settings[:default_privacy] = 'public'
+      expect(user.setting_default_privacy).to eq 'public'
     end
 
     it "returns 'private' if user has not configured default privacy setting and account is locked" do
@@ -198,9 +198,9 @@ RSpec.describe User, type: :model do
       expect(user.setting_default_privacy).to eq 'private'
     end
 
-    it "returns 'public' if user has not configured default privacy setting and account is not locked" do
+    it "returns 'unlisted' if user has not configured default privacy setting and account is not locked" do
       user = Fabricate(:user, account: Fabricate(:account, locked: false))
-      expect(user.setting_default_privacy).to eq 'public'
+      expect(user.setting_default_privacy).to eq 'unlisted'
     end
   end
 
