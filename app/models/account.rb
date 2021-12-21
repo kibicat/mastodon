@@ -129,6 +129,8 @@ class Account < ApplicationRecord
            :unconfirmed_email,
            :current_sign_in_ip,
            :current_sign_in_at,
+           :created_at,
+           :sign_up_ip,
            :confirmed?,
            :approved?,
            :pending?,
@@ -147,7 +149,7 @@ class Account < ApplicationRecord
 
   delegate :chosen_languages, to: :user, prefix: false, allow_nil: true
 
-  update_index('accounts#account', :self)
+  update_index('accounts', :self)
 
   def local?
     domain.nil?
