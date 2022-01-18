@@ -8,20 +8,12 @@
 = render 'application/card', account: @account
 
 - account = @account
-- proofs = account.identity_proofs.active
 - fields = account.fields
-- unless fields.empty? && proofs.empty? && account.note.blank?
+- unless fields.empty? && account.note.blank?
   .admin-account-bio
-    - unless fields.empty? && proofs.empty?
+    - unless fields.empty?
       %div
         .account__header__fields
-          - proofs.each do |proof|
-            %dl
-              %dt= proof.provider.capitalize
-              %dd.verified
-                = link_to fa_icon('check'), proof.badge.proof_url, class: 'verified__mark', title: t('accounts.link_verified_on', date: l(proof.updated_at))
-                = link_to proof.provider_username, proof.badge.profile_url
-
           - fields.each do |field|
             %dl
               %dt.emojify{ title: field.name }= Formatter.instance.format_field(account, field.name, custom_emojify: true)
@@ -79,7 +71,9 @@
           = t('admin.accounts.no_limits_imposed')
       .dashboard__counters__label= t 'admin.accounts.login_status'
 
-- unless @account.local? && @account.user.nil?
+- if @account.local? && @account.user.nil?
+  = link_to t('admin.accounts.unblock_email'), unblock_email_admin_account_path(@account.id), method: :post, class: 'button' if can?(:unblock_email, @account) && CanonicalEmailBlock.where(reference_account_id: @account.id).exists?
+- else
   .table-wrapper
     %table.table.inline-table
       %tbody
