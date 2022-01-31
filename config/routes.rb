@@ -44,6 +44,7 @@ Rails.application.routes.draw do
       resource :setup, only: [:show, :update], controller: :setup
       resource :challenge, only: [:create], controller: :challenges
       get 'sessions/security_key_options', to: 'sessions#webauthn_options'
+      post 'captcha_confirmation', to: 'confirmations#confirm_captcha', as: :captcha_confirmation
     end
   end
 
@@ -233,8 +234,6 @@ Rails.application.routes.draw do
         post :reopen
         post :resolve
       end
-
-      resources :reported_statuses, only: [:create]
     end
 
     resources :report_notes, only: [:create, :destroy]
@@ -261,7 +260,13 @@ Rails.application.routes.draw do
       resource :change_email, only: [:show, :update]
       resource :reset, only: [:create]
       resource :action, only: [:new, :create], controller: 'account_actions'
-      resources :statuses, only: [:index, :show, :create, :update, :destroy]
+
+      resources :statuses, only: [:index] do
+        collection do
+          post :batch
+        end
+      end
+
       resources :relationships, only: [:index]
 
       resource :confirmation, only: [:create] do
@@ -348,6 +353,9 @@ Rails.application.routes.draw do
 
           resource :pin, only: :create
           post :unpin, to: 'pins#destroy'
+
+          resource :history, only: :show
+          resource :source, only: :show
         end
 
         member do
@@ -518,7 +526,7 @@ Rails.application.routes.draw do
           resource :action, only: [:create], controller: 'account_actions'
         end
 
-        resources :reports, only: [:index, :show] do
+        resources :reports, only: [:index, :update, :show] do
           member do
             post :assign_to_self
             post :unassign
