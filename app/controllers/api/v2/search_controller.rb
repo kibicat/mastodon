@@ -11,10 +11,6 @@ class Api::V2::SearchController < Api::BaseController
   def index
     @search = Search.new(search_results)
     render json: @search, serializer: REST::SearchSerializer
-  rescue Mastodon::SyntaxError
-    unprocessable_entity
-  rescue ActiveRecord::RecordNotFound
-    not_found
   end
 
   private
