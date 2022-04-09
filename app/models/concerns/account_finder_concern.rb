@@ -38,7 +38,15 @@ module AccountFinderConcern
     end
   end
 
-  ACCOUNT_STRING_RE = /^@?(?<username>#{Account::USERNAME_RE})(?:@(?<domain>[[:word:]\.\-]+))?$/i
+  # TODO: where should this go?
+  #
+  # this is adapted from MENTION_RE to
+  #   + capture only a mention,
+  #   + not require the mention to begin with an @,
+  #   + not match if there is anything surrounding the mention, and
+  #   + add named subgroup matches
+  # it would be ideal to explicitly refer to MENTION_RE, or a more fundamental regexp that we refactor MENTION_RE to incorporate
+  ACCOUNT_STRING_RE = /^@?(?<username>#{Account::USERNAME_RE})(?:@(?<domain>[[:word:]\.\-]+[[:word:]]+))?$/i
 
   class AccountFinder
     attr_reader :username, :domain
