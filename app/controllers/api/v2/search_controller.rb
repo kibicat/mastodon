@@ -19,7 +19,7 @@ class Api::V2::SearchController < Api::BaseController
   rescue Mastodon::SyntaxError
     unprocessable_entity
   # user searched for posts from an account the instance is not aware of
-  rescue Mastodon::NotFound
+  rescue ActiveRecord::NotFound
     not_found
   end
 

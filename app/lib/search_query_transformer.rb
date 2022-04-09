@@ -88,14 +88,10 @@ class SearchQueryTransformer < Parslet::Transform
       case prefix
       when 'from'
         @filter = :account_id
-
-        username, domain = Account.validate_account_string(term)
-        raise Mastodon::SyntaxError, "Account string invalid: #{term}" if username.nil?
-
-        account = Account.find_local_or_remote(username, domain)
-        raise Mastodon::NotFound, "Account not found: #{term}" if account.nil?
-
+        username, domain = Account.validate_account_string!(term)
+        account = Account.find_local_or_remote!(username, domain)
         @term = account.id
+      # TODO: consider, instead of erroring on non-prefixes, treating them as words to search for. motivating case: searching for `https://.*`
       else
         raise Mastodon::SyntaxError, "Unknown prefix: #{prefix}"
       end

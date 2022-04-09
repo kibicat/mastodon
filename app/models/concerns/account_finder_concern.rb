@@ -12,6 +12,10 @@ module AccountFinderConcern
       find_remote(username, domain) || raise(ActiveRecord::RecordNotFound)
     end
 
+    def find_local_or_remote!(username, domain)
+      find_local_or_remote(username, domain) || raise(ActiveRecord::RecordNotFound)
+    end
+
     def representative
       Account.find(-99)
     rescue ActiveRecord::RecordNotFound
@@ -26,15 +30,15 @@ module AccountFinderConcern
       AccountFinder.new(username, domain).account
     end
 
-    # sigh
     def find_local_or_remote(username, domain)
       TagManager.instance.local_domain?(domain) ? find_local(username) : find_remote(username, domain)
     end
 
-    def validate_account_string(account_string)
+    def validate_account_string!(account_string)
       match = ACCOUNT_STRING_RE.match(account_string)
+      raise Mastodon::SyntaxError if match.nil? || match[:username].nil?
 
-      [match[:username], match[:domain]] if match
+      [match[:username], match[:domain]]
     end
   end
 
