@@ -45,6 +45,19 @@ RSpec.describe ProcessMentionsService, type: :service do
         expect(remote_user.mentions.where(status: status).count).to eq 1
       end
     end
+
+    context 'with a malformed mention' do
+      let!(:remote_user) { Fabricate(:account, username: 'remote_user', protocol: :activitypub, domain: 'example.com', inbox_url: 'http://example.com/inbox') }
+      let(:status) { Fabricate(:status, account: account, text: "Hello @#{remote_user.acct}@osueth", visibility: visibility) }
+
+      before do
+        subject.call(status)
+      end
+
+      it 'does not create a mention' do
+        expect(remote_user.mentions.where(status: status).count).to eq 0
+      end
+    end
   end
 
   context 'Temporarily-unreachable ActivityPub user' do
